@@ -20,3 +20,8 @@ class Sphere:
             dist = (-b - math.sqrt(discriminant)) / 2 * a
             if dist > 0:
                 return dist
+    
+    def normal(self, surface_point):
+        """Returns surface normal to the point on the sphere's surface"""
+
+        return (surface_point - self.center).normalize()
