@@ -6,6 +6,9 @@ from color import Color
 class RenderEngine:
     """Renders 2D objects into 3D objectys using ray tracing"""
 
+    MAX_DEPTH = 5
+    MIN_DISPLACE = 0.0001
+
     def render(self, scene):
         width = scene.width
         height = scene.height
@@ -31,7 +34,7 @@ class RenderEngine:
             print("{:3.0f}%".format(float(j) / float(height) * 100), end='\r')
         return pixels
 
-    def ray_trace(self, ray, scene):
+    def ray_trace(self, ray, scene, depth=0):
         color = Color(0,0,0)
         #find nearest object to ray in the scene
         dist_hit, object_hit = self.find_nearest(ray, scene)
@@ -40,6 +43,13 @@ class RenderEngine:
         hit_pos = ray.origin + ray.direction * dist_hit
         hit_normal = object_hit.normal(hit_pos)
         color += self.color_at(object_hit, hit_pos, hit_normal, scene)
+        if depth < self.MAX_DEPTH:
+            new_ray_pos = hit_pos + hit_normal * self.MIN_DISPLACE
+            new_ray_dir = ray.direction - 2* ray.direction.dot_product(hit_normal) * hit_normal
+            new_ray = Ray(new_ray_pos, new_ray_dir)
+            #Attenuate reflected ray by reflection coefficient
+            #bouncing around causes the ray to lose energy
+            color += self.ray_trace(new_ray, scene, depth+1) * object_hit.material.reflection 
         return color
 
     def find_nearest(self, ray, scene):
@@ -68,4 +78,4 @@ class RenderEngine:
             #specular shading (blinn-phong)
             half_vector = (to_light.direction + to_cam).normalize()
             color += light.color * material.specular * max(normal.dot_product(half_vector), 0) ** specular_k
-            return color
+        return color
