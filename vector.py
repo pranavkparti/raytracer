@@ -14,6 +14,10 @@ class Vector():
 
     def __sub__(self, other):
         return Vector(self.x-other.x, self.y-other.y, self.z-other.z)
+
+    #overloaded for unary negative -
+    def __neg__(self):
+        return Vector(-self.x, -self.y, -self.z)
     
     def __mul__(self, other):
         assert not isinstance(other, Vector)
@@ -26,12 +30,22 @@ class Vector():
         assert not isinstance(other, Vector)
         return Vector(self.x/other, self.y/other, self.z/other) #vector divided with a constant
 
+    #dot product of two vectors
     def dot_product(self, other):
         return self.x*other.x + self.y*other.y + self.z*other.z
+
+    #cross product of two vectors
+    def cross_product(self, other):
+        return Vector(
+                self.y * other.z - self.z * other.y,
+                self.z * other.x - self.x * other.z,
+                self.x * other.y - self.y * other.x,
+                )
 
     def magnitude(self):
         return math.sqrt(self.dot_product(self))
 
+    #normalized, i.e, unit vector
     def normalize(self):
         return self / self.magnitude()
 
