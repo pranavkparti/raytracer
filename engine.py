@@ -86,6 +86,7 @@ class RenderEngine:
         if object_hit is None:
             return color
         hit_pos = ray.origin + ray.direction * dist_hit
+        #hit_pos = Ray(ray.origin, ray.direction).at(dist_hit)
         hit_normal = object_hit.normal(hit_pos)
         color += self.color_at(object_hit, hit_pos, hit_normal, scene)
         if depth < self.MAX_DEPTH:
