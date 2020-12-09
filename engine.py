@@ -1,7 +1,6 @@
 from image import Image
 from ray import Ray
-from point import Point
-from color import Color
+from vector import Point, Color
 import tempfile
 from pathlib import Path
 import shutil

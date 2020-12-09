@@ -1,4 +1,4 @@
-from color import Color
+from vector import Color
 
 class Material:
     """Material has color and properties that define how it reacts to light"""

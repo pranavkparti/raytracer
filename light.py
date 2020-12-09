@@ -1,4 +1,4 @@
-from color import Color
+from vector import Color
 
 class Light:
     """Light represents a point light source of a certain color"""

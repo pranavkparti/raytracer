@@ -4,3 +4,7 @@ class Ray:
     def __init__(self, origin, direction):
         self.origin = origin
         self.direction = direction.normalize()
+    
+    #find position of a point along the ray 
+    def at(self, magnitude):
+        return self.origin + self.direction * magnitude

@@ -1,7 +1,5 @@
 from image import Image
-from color import Color
-from vector import Vector
-from point import Point
+from vector import Vector, Point, Color
 from sphere import Sphere
 from engine import RenderEngine
 from light import Light
