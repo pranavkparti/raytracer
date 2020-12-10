@@ -62,12 +62,25 @@ class RenderEngine:
         camera = scene.camera
         pixels = Image(width, hmax - hmin)
 
+        #defining ray_color
+        def ray_color(ray):
+            unit_direction = ray.direction
+            t = 0.5 * (unit_direction.y + 1.0)
+            return (t) * Color(1, 1, 1) + (1 -t) * Color(0.5, 0.7, 1.0)
+
         for j in range(hmin, hmax):
-            y = y0 + j * ystep
             for i in range(width):
-                x = x0 + i * xstep
-                ray = Ray(camera, Point(x, y) - camera)
-                pixels.set_pixel(i, j - hmin, self.ray_trace(ray, scene))
+                u = i / (width - 1)
+                v = j / (height - 1)
+                ray = Ray(camera.origin, camera.lower_left_corner + u * camera.horizontal + v * camera.vertical - camera.origin)
+                pixel_color = ray_color(ray)
+                pixels.set_pixel(i, j -  hmin, pixel_color)
+        # for j in range(hmin, hmax):
+        #     y = y0 + j * ystep
+        #     for i in range(width):
+        #         x = x0 + i * xstep
+        #         ray = Ray(camera, Point(x, y) - camera)
+        #         pixels.set_pixel(i, j - hmin, self.ray_trace(ray, scene))
             
             #printing progress bar
             #print("{:3.0f}%".format(float(j) / float(height) * 100), end='\r')

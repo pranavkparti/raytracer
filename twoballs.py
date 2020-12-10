@@ -4,11 +4,13 @@ from sphere import Sphere
 from engine import RenderEngine
 from light import Light
 from material import Material, ChequeredMaterial
+from camera import Camera
 
 WIDTH = 1920
 HEIGHT = 1080
 RENDERED_IMG = 'images/2balls.ppm'
-CAMERA = Vector(0, -0.35, -1)
+#CAMERA = Vector(0, -0.35, -1)
+CAMERA  = Camera(1920, 16.0 / 9.0, 2.0)
 OBJECTS = [
     #ground plane
     Sphere(Point(0,10000.5,1), 10000, ChequeredMaterial(
