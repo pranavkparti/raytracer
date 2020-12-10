@@ -1,10 +1,7 @@
 from vector import Point, Vector
 
 class Camera:
-    def __init__(self, width, aspect_ratio, viewport_height):
-        self.width = width
-        self.aspect_ratio = aspect_ratio
-        self.height = width / aspect_ratio
+    def __init__(self, viewport_height, aspect_ratio):
         self.viewport_height = viewport_height
         self.viewport_width = viewport_height * aspect_ratio
 

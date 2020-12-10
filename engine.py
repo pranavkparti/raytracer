@@ -1,6 +1,8 @@
 from image import Image
 from ray import Ray
 from vector import Point, Color
+from sphere import Sphere
+from material import Material
 import tempfile
 from pathlib import Path
 import shutil
@@ -64,9 +66,13 @@ class RenderEngine:
 
         #defining ray_color
         def ray_color(ray):
+            t = Sphere(Point(0,0,-1), 0.5, Material(Color.from_hex('#00ff00'))).intersects(ray)
+            if t is not None:
+                N = (ray.at(t) - Point(0,0,-1)).normalize()
+                return 0.5 * Color(N.x + 1, N.y + 1, N.z + 1)
             unit_direction = ray.direction
             t = 0.5 * (unit_direction.y + 1.0)
-            return (t) * Color(1, 1, 1) + (1 -t) * Color(0.5, 0.7, 1.0)
+            return (1 - t) * Color(1, 1, 1) + (t) * Color(0.5, 0.7, 1.0)
 
         for j in range(hmin, hmax):
             for i in range(width):
@@ -74,7 +80,7 @@ class RenderEngine:
                 v = j / (height - 1)
                 ray = Ray(camera.origin, camera.lower_left_corner + u * camera.horizontal + v * camera.vertical - camera.origin)
                 pixel_color = ray_color(ray)
-                pixels.set_pixel(i, j -  hmin, pixel_color)
+                pixels.set_pixel(i, j - hmin, pixel_color)
         # for j in range(hmin, hmax):
         #     y = y0 + j * ystep
         #     for i in range(width):

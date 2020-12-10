@@ -1,4 +1,4 @@
-from image import Image
+#from image import Image
 from vector import Vector, Point, Color
 from sphere import Sphere
 from engine import RenderEngine
@@ -6,11 +6,16 @@ from light import Light
 from material import Material, ChequeredMaterial
 from camera import Camera
 
-WIDTH = 1920
-HEIGHT = 1080
+#image dimensions
+WIDTH = 960
+HEIGHT = 540
+ASPECT_RATIO = WIDTH / HEIGHT
+#camera attributes
+VIEWPORT_HEIGHT = 2.0
+
 RENDERED_IMG = 'images/2balls.ppm'
 #CAMERA = Vector(0, -0.35, -1)
-CAMERA  = Camera(1920, 16.0 / 9.0, 2.0)
+CAMERA  = Camera(VIEWPORT_HEIGHT , ASPECT_RATIO)
 OBJECTS = [
     #ground plane
     Sphere(Point(0,10000.5,1), 10000, ChequeredMaterial(
