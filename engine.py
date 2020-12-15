@@ -1,3 +1,5 @@
+import math
+from hittable import Hit_Record
 from image import Image
 from ray import Ray
 from vector import Point, Color
@@ -13,6 +15,11 @@ class RenderEngine:
 
     MAX_DEPTH = 5
     MIN_DISPLACE = 0.0001
+    INFINITY = float('inf')
+    PI = math.pi
+
+    def degrees_to_radians(self, degrees):
+        return degrees * self.PI / 180.0
 
     def render_multiprocess(self, scene, process_count, img_fileobj):
         def split_range(count, parts):
@@ -65,11 +72,19 @@ class RenderEngine:
         pixels = Image(width, hmax - hmin)
 
         #defining ray_color
-        def ray_color(ray):
-            t = Sphere(Point(0,0,-1), 0.5, Material(Color.from_hex('#00ff00'))).intersects(ray)
+        def ray_color(ray, scene):
+            #objs = scene.objects
+            dist_min, rec = self.find_nearest(ray, 0, self.INFINITY, scene)
+            #rec = obj_hit.intersects(ray, 0, self.INFINITY)
+            #t = Sphere(Point(0,0,-1), 0.5, Material(Color.from_hex('#00ff00'))).intersects(ray,-1,10)
+            if rec is not None:
+                t = rec.t
+            else:
+                t = None
             if t is not None:
-                N = (ray.at(t) - Point(0,0,-1)).normalize()
-                return 0.5 * Color(N.x + 1, N.y + 1, N.z + 1)
+                #N = (ray.at(rec.t) - Point(0,0,-1)).normalize()
+                #return 0.5 * Color(N.x + 1, N.y + 1, N.z + 1)
+                return 0.5 * (rec.normal + Color(1,1,1))
             unit_direction = ray.direction
             t = 0.5 * (unit_direction.y + 1.0)
             return (1 - t) * Color(1, 1, 1) + (t) * Color(0.5, 0.7, 1.0)
@@ -79,17 +94,9 @@ class RenderEngine:
                 u = i / (width - 1)
                 v = j / (height - 1)
                 ray = Ray(camera.origin, camera.lower_left_corner + u * camera.horizontal + v * camera.vertical - camera.origin)
-                pixel_color = ray_color(ray)
+                pixel_color = ray_color(ray, scene)
                 pixels.set_pixel(i, j - hmin, pixel_color)
-        # for j in range(hmin, hmax):
-        #     y = y0 + j * ystep
-        #     for i in range(width):
-        #         x = x0 + i * xstep
-        #         ray = Ray(camera, Point(x, y) - camera)
-        #         pixels.set_pixel(i, j - hmin, self.ray_trace(ray, scene))
-            
-            #printing progress bar
-            #print("{:3.0f}%".format(float(j) / float(height) * 100), end='\r')
+        
             if rows_done:
                 with rows_done.get_lock():
                     rows_done.value += 1
@@ -117,7 +124,7 @@ class RenderEngine:
             color += self.ray_trace(new_ray, scene, depth+1) * object_hit.material.reflection 
         return color
 
-    def find_nearest(self, ray, scene):
+    # def find_nearest(self, ray, scene):
         dist_min = None
         obj_hit = None
         for obj in scene.objects:
@@ -127,6 +134,20 @@ class RenderEngine:
                 obj_hit = obj
         return (dist_min, obj_hit)
 
+    def find_nearest(self, ray, tmin, tmax, scene):
+        closest_so_far = tmax
+        obj_hit = None 
+        # rec = Hit_Record()
+        for obj in scene.objects:
+            rec = obj.intersects(ray, tmin, tmax)
+            if rec is not None:
+                dist = rec.t
+            else:
+                dist = None
+            if dist is not None and (obj_hit is None or dist < closest_so_far):
+                closest_so_far = dist
+                obj_hit = rec
+        return (closest_so_far, obj_hit)
 
     def color_at(self, obj_hit, hit_pos, normal, scene):
         material = obj_hit.material
