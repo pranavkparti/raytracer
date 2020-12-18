@@ -27,7 +27,7 @@ def main():
     
     os.chdir(os.path.dirname(os.path.abspath(mod.__file__)))
     with open(mod.RENDERED_IMG, 'w') as img_fileobj:
-        engine.render_multiprocess(scene, process_count, img_fileobj)
+        engine.render_multiprocess(scene, process_count, img_fileobj, mod.SAMPLES_PER_PIXEL)
 
 
 if __name__ == '__main__':

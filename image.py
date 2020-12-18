@@ -1,3 +1,5 @@
+import math
+
 class Image:
     def __init__(self, width, height):
         self.width = width
@@ -21,15 +23,19 @@ class Image:
         image_fileobj.write('P3 {} {}\n255\n'.format(width, height))
 
 
-    def write_ppm_raw(self, img_fileobj):
-        def to_byte(c):
-            return round(max(min(c * 255, 255), 0)) #setting possible range for c, i.e, 0 to 255 
+    def write_ppm_raw(self, img_fileobj, samples_per_pixel=1):
+        def to_byte_transform(c):
+            c *= scale #for anti-aliasing
+            c = math.sqrt(c) #gamma 2 correction
+            c =  round(max(min(c * 255, 255), 0)) #setting possible range for c, i.e, 0 to 255 
+            return c
 
+        scale = 1.0 / samples_per_pixel
         for row in self.pixels:
             for color in row:
                 img_fileobj.write(
                     "{} {} {} ".format(
-                        to_byte(color.x), to_byte(color.y), to_byte(color.z)
+                        to_byte_transform(color.x), to_byte_transform(color.y), to_byte_transform(color.z)
                     )
                 )
             img_fileobj.write('\n')

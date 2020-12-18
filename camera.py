@@ -1,4 +1,5 @@
 from vector import Point, Vector
+from ray import Ray
 
 class Camera:
     def __init__(self, viewport_height, aspect_ratio):
@@ -16,5 +17,6 @@ class Camera:
                                     - Vector(0, 0, self.focal_length)
                                     )
         
-
+    def get_ray(self, u, v):
+        return Ray(self.origin, self.lower_left_corner +  u * self.horizontal + v * self.vertical - self.origin)
         

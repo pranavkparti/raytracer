@@ -37,3 +37,5 @@ LIGHTS = [
     Light(Point(1.5, -0.5, -10.0), Color.from_hex("#ffffff")),
     Light(Point(-0.5, -10.5, 0), Color.from_hex("#e6e6e6")),
     ]
+
+SAMPLES_PER_PIXEL = 100
