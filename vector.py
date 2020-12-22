@@ -48,6 +48,12 @@ class Vector():
     #normalized, i.e, unit vector
     def normalize(self):
         return self / self.magnitude()
+    
+    
+    #returns true if vector is very close to zero
+    def near_zero(self):
+        s = 1e-8
+        return ((self.x < s) and (self.y < s) and (self.z < s))
 
     def __str__(self):
         return '({}, {}, {})'.format(self.x, self.y, self.z) #could also use f string

@@ -12,6 +12,7 @@ import shutil
 from multiprocessing import Value, Process
 from camera import Camera
 from vector import Vector
+from sphere import Sphere
 
 class RenderEngine:
     """Renders 2D objects into 3D objectys using ray tracing"""
@@ -31,14 +32,6 @@ class RenderEngine:
     #         return min
     #     else:
     #         return x
-
-    def random_in_unit_sphere(self):
-        while 1:
-            p = Vector(uniform(-1, 1), uniform(-1, 1), uniform(-1, 1))
-            if p.magnitude() >= 1:
-                continue
-            else:
-                return p
 
     def render_multiprocess(self, scene, process_count, img_fileobj, samples_per_pixel):
         def split_range(count, parts):
@@ -96,7 +89,8 @@ class RenderEngine:
                 return Color(0, 0, 0)
                 #return Color(0, 0, 0)
             #objs = scene.objects
-            dist_min, rec = self.find_nearest(ray, 0, self.INFINITY, scene)
+            #0.001 to solve shadow acne problem
+            dist_min, rec = self.find_nearest(ray, 0.001, self.INFINITY, scene)
             #rec = obj_hit.intersects(ray, 0, self.INFINITY)
             #t = Sphere(Point(0,0,-1), 0.5, Material(Color.from_hex('#00ff00'))).intersects(ray,-1,10)
             if rec is not None:
@@ -104,9 +98,7 @@ class RenderEngine:
             else:
                 t = None
             if t is not None:
-                #N = (ray.at(rec.t) - Point(0,0,-1)).normalize()
-                #return 0.5 * Color(N.x + 1, N.y + 1, N.z + 1)
-                target = rec.point + rec.normal + self.random_in_unit_sphere()
+                target = rec.point + rec.normal + Sphere.random_unit_vector()
                 return 0.5 * ray_color(Ray(rec.point, target - rec.point), scene, depth - 1)
             unit_direction = ray.direction
             t = 0.5 * (unit_direction.y + 1.0)

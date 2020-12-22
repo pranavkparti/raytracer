@@ -1,9 +1,10 @@
 class Hit_Record:
-    def __init__(self, point=None, t=None, normal = None):
+    def __init__(self, point=None, t=None, normal = None, material=None):
         self.t = t
         self.point = point
         self.normal = normal
-        
+        self.material = material
+
     def set_face_normal(self, ray, outward_normal):
         front_face = ray.direction.dot_product(outward_normal) < 0
         if front_face:

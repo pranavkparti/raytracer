@@ -1,5 +1,7 @@
 import math
 from hittable import Hit_Record
+from vector import Vector
+from random import random, uniform
 
 class Sphere():
     """Sphere is the only 3D shape implemented. Has center, radius, and material"""
@@ -28,6 +30,7 @@ class Sphere():
             rec.point = ray.at(rec.t)
             outward_normal = (rec.point - self.center) / self.radius
             rec.normal = self.set_face_normal(ray, outward_normal)
+            rec.material = self.material
             return rec #define rec here instead, as in send the values to engine
         else:
             return None
@@ -59,3 +62,16 @@ class Sphere():
         else:
             normal = -outward_normal
         return normal
+    
+    @classmethod
+    def random_in_unit_sphere(self):
+        while 1:
+            p = Vector(uniform(-1, 1), uniform(-1, 1), uniform(-1, 1))
+            if p.magnitude() >= 1:
+                continue
+            else:
+                return p
+    @classmethod
+    def random_unit_vector(self):
+        return self.random_in_unit_sphere().normalize()
+
