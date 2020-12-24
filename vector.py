@@ -41,6 +41,9 @@ class Vector():
                 self.z * other.x - self.x * other.z,
                 self.x * other.y - self.y * other.x,
                 )
+    
+    def indimul(self, other):
+        return Vector(self.x * other.x, self.y * other.y, self.z * other.z)
 
     def magnitude(self):
         return math.sqrt(self.dot_product(self))

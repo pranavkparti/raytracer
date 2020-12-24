@@ -85,12 +85,15 @@ class RenderEngine:
 
         #defining ray_color
         def ray_color(ray, scene, depth):
+            color = Color(0, 0, 0)
             if depth <= 0:
                 return Color(0, 0, 0)
                 #return Color(0, 0, 0)
             #objs = scene.objects
             #0.001 to solve shadow acne problem
             dist_min, rec = self.find_nearest(ray, 0.001, self.INFINITY, scene)
+            zero = Color()
+
             #rec = obj_hit.intersects(ray, 0, self.INFINITY)
             #t = Sphere(Point(0,0,-1), 0.5, Material(Color.from_hex('#00ff00'))).intersects(ray,-1,10)
             if rec is not None:
@@ -98,8 +101,15 @@ class RenderEngine:
             else:
                 t = None
             if t is not None:
-                target = rec.point + rec.normal + Sphere.random_unit_vector()
-                return 0.5 * ray_color(Ray(rec.point, target - rec.point), scene, depth - 1)
+                #color += self.color_at(rec)
+                scatter_info = rec.material.scatter(ray, rec)
+                if scatter_info :
+                    return ray_color(scatter_info.scattered, scene, depth - 1).indimul(scatter_info.attenuation) 
+                else:
+                    return zero
+                # target = rec.point + rec.normal + Sphere.random_unit_vector()
+                # return 0.5 * ray_color(Ray(rec.point, target - rec.point), scene, depth - 1)
+            
             unit_direction = ray.direction
             t = 0.5 * (unit_direction.y + 1.0)
             return (t) * Color(1, 1, 1) + (1 - t) * Color(0.5, 0.7, 1.0)
@@ -123,34 +133,6 @@ class RenderEngine:
         with open(part_file, 'w') as part_fileobj:
             pixels.write_ppm_raw(part_fileobj, samples_per_pixel)
 
-    # def ray_trace(self, ray, scene, depth=0):
-    #     color = Color(0,0,0)
-    #     #find nearest object to ray in the scene
-    #     dist_hit, object_hit = self.find_nearest(ray, scene)
-    #     if object_hit is None:
-    #         return color
-    #     hit_pos = ray.origin + ray.direction * dist_hit
-    #     #hit_pos = Ray(ray.origin, ray.direction).at(dist_hit)
-    #     hit_normal = object_hit.normal(hit_pos)
-    #     color += self.color_at(object_hit, hit_pos, hit_normal, scene)
-    #     if depth < self.MAX_DEPTH:
-    #         new_ray_pos = hit_pos + hit_normal * self.MIN_DISPLACE
-    #         new_ray_dir = ray.direction - 2* ray.direction.dot_product(hit_normal) * hit_normal
-    #         new_ray = Ray(new_ray_pos, new_ray_dir)
-    #         #Attenuate reflected ray by reflection coefficient
-    #         #bouncing around causes the ray to lose energy
-    #         color += self.ray_trace(new_ray, scene, depth+1) * object_hit.material.reflection 
-    #     return color
-
-    #  def find_nearest(self, ray, scene):
-    #     dist_min = None
-    #     obj_hit = None
-    #     for obj in scene.objects:
-    #         dist = obj.intersects(ray)
-    #         if dist is not None and (obj_hit is None or dist < dist_min):
-    #             dist_min = dist
-    #             obj_hit = obj
-    #     return (dist_min, obj_hit)
 
     def find_nearest(self, ray, tmin, tmax, scene):
         closest_so_far = tmax
@@ -167,19 +149,5 @@ class RenderEngine:
                 obj_hit = rec
         return (closest_so_far, obj_hit)
 
-    # def color_at(self, obj_hit, hit_pos, normal, scene):
-    #     material = obj_hit.material
-    #     obj_color = material.color_at(hit_pos)
-    #     to_cam = scene.camera - hit_pos
-    #     specular_k = 50
-    #     #ambient color
-    #     color = material.ambient * Color.from_hex("#ffffff")
-    #     #light calculations
-    #     for light in scene.lights:
-    #         to_light = Ray(hit_pos, light.position - hit_pos)
-    #         #diffuse shading (lambert)
-    #         color += obj_color * material.diffuse * max(normal.dot_product(to_light.direction), 0)
-    #         #specular shading (blinn-phong)
-    #         half_vector = (to_light.direction + to_cam).normalize()
-    #         color += light.color * material.specular * max(normal.dot_product(half_vector), 0) ** specular_k
-    #     return color
+    def color_at(self, rec):
+        pass

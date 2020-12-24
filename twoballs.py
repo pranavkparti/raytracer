@@ -3,7 +3,7 @@ from vector import Vector, Point, Color
 from sphere import Sphere
 from engine import RenderEngine
 from light import Light
-from material import Material, ChequeredMaterial
+from material import Lambertian, Metal
 from camera import Camera
 
 #image dimensions
@@ -31,8 +31,11 @@ CAMERA  = Camera(VIEWPORT_HEIGHT , ASPECT_RATIO)
 #     Sphere(Point(-0.75,-0.1,2.25), 0.6, Material(Color.from_hex('#803980'))),
 #     ]
 
-OBJECTS = [Sphere(Point(0,0,-1), 0.5, Material(Color.from_hex('#00ff00'))),
-            Sphere(Point(0,100.5,-1), 100, Material(Color.from_hex('#00ff00')))]
+OBJECTS = [Sphere(Point(0,0,-1), 0.5, Lambertian(Color(0.8, 0.3, 0.3))),
+            Sphere(Point(0,100.5,-1), 100, Lambertian(Color(0.8, 0.8, 0))),
+            Sphere(Point(1, 0, -1), 0.5, Metal(Color(0.8, 0.6, 0.2))),
+            Sphere(Point(-1, 0, -1), 0.5, Metal(Color(0.8, 0.8, 0.8)))
+        ]
 LIGHTS = [
     Light(Point(1.5, -0.5, -10.0), Color.from_hex("#ffffff")),
     Light(Point(-0.5, -10.5, 0), Color.from_hex("#e6e6e6")),
